@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Nav -->
+  <nav class="bg-primary text-white p-4 px-8 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold font-serif tracking-wider">DEN HOF <span class="font-sans font-light text-sm ml-2 opacity-80">ADMINISTRATIE</span></h1>
+    <div class="flex gap-6 items-center text-sm font-medium">
+      <a routerLink="/" class="hover:text-accentYellow transition-colors flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Naar Website
+      </a>
+      <div class="w-px h-4 bg-white/30"></div>
+      <button (click)="logout()" class="hover:text-accentYellow transition-colors">Uitloggen</button>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto p-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Menu Beheer -->
+      <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Menu Beheren</h2>
+          @if (categories.length > 0) {
+            <button class="bg-primary/10 text-primary px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white transition-colors text-sm">
+              + Nieuw Gerecht
+            </button>
+          }
+        </div>
+        
+        @if (!isLoaded) {
+          <div class="flex justify-center p-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        } @else if (categories.length === 0) {
+          <div class="bg-gray-50 rounded-xl p-8 text-center border-2 border-dashed border-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+            <p class="text-gray-800 font-bold text-lg mb-2">Je database is nog leeg!</p>
+            <p class="text-gray-500 mb-6">Kopieer nu het bestaande menu (wat we net geprogrammeerd hebben) direct naar Firebase.</p>
+            <button (click)="seedDatabase()" [disabled]="isSeeding" class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 shadow-md transition-all disabled:opacity-50">
+              {{ isSeeding ? 'Bezig met kopiëren...' : 'Kopieer Menu naar Database' }}
+            </button>
+          </div>
+        } @else {
+          <div class="space-y-6">
+            @for (category of categories; track category.id) {
+              <div class="border border-lines/50 rounded-xl overflow-hidden">
+                <div class="bg-gray-50 px-4 py-3 flex justify-between items-center border-b border-lines/50">
+                  <h3 class="font-bold text-lg">{{ category.title }}</h3>
+                  <button class="text-sm text-primary hover:underline">Bewerk categorie</button>
+                </div>
+                <ul class="divide-y divide-lines/30">
+                  @for (item of category.items; track item.name; let i = $index) {
+                    <li class="p-4 hover:bg-gray-50 transition-colors flex justify-between items-center">
+                      @if (editingItemIndex === i && editingCategory?.id === category.id) {
+                        <div class="flex-1 flex flex-col md:flex-row gap-4 items-start md:items-center w-full">
+                          <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                            <div>
+                              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Naam</label>
+                              <input [(ngModel)]="editingItem!.name" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                            </div>
+                            <div>
+                              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Prijs (€)</label>
+                              <input type="number" [(ngModel)]="editingItem!.price" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                            </div>
+                            <div>
+                              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Pittigheid (0-3)</label>
+                              <input type="number" min="0" max="3" [(ngModel)]="editingItem!.spicyLevel" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                            </div>
+                            <div class="md:col-span-3">
+                              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Beschrijving (optioneel)</label>
+                              <input [(ngModel)]="editingItem!.description" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                            </div>
+                          </div>
+                          <div class="flex flex-row md:flex-col gap-2 mt-4 md:mt-0">
+                            <button (click)="saveEdit()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-opacity-90">Opslaan</button>
+                            <button (click)="cancelEdit()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-300">Annuleren</button>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="flex-1">
+                          <p class="font-medium">
+                            @if (item.id) { <span class="text-gray-400 mr-1">{{ item.id }}.</span> }
+                            {{ item.name }}
+                            @if (item.spicyLevel) {
+                              <span class="text-red-500 text-sm ml-2">
+                                @for (i of getSpicyArray(item.spicyLevel); track $index) {
+                                  🌶️
+                                }
+                              </span>
+                            }
+                          </p>
+                          <p class="text-sm text-gray-500 mt-1 line-clamp-1">{{ item.description }}</p>
+                        </div>
+                        <div class="flex items-center gap-4 pl-4">
+                          <span class="font-semibold text-lg">€{{ item.price | number:'1.2-2' }}</span>
+                          <button (click)="startEdit(item, i, category)" class="text-gray-400 hover:text-primary transition-colors p-2 bg-white shadow-sm rounded-full border border-gray-100 hover:border-primary/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                          </button>
+                        </div>
+                      }
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      
+      <!-- Instellingen Beheer -->
+      <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 self-start">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Instellingen & Uren</h2>
+        
+        @if (!isSettingsLoaded) {
+          <div class="flex justify-center p-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        } @else {
+          <div class="space-y-6">
+            <div>
+              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Telefoonnummer</label>
+              <input [(ngModel)]="settings.phone" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+            </div>
+            
+            <div>
+              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Openingstijden (hoofdlijn)</label>
+              <input [(ngModel)]="settings.openingHours" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+            </div>
+            
+            <div>
+              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Openingstijden (extra info)</label>
+              <input [(ngModel)]="settings.openingHoursExtra" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+            </div>
+            
+            <div>
+              <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Adres</label>
+              <input [(ngModel)]="settings.address" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+            </div>
+            
+            <button (click)="saveSettings()" [disabled]="isSavingSettings" class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-opacity-90 shadow-md transition-all disabled:opacity-50 mt-4">
+              {{ isSavingSettings ? 'Bezig met opslaan...' : 'Sla Instellingen Op' }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

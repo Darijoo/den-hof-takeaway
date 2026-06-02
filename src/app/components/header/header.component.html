@@ -1,0 +1,51 @@
+<header class="bg-background/95 backdrop-blur-md fixed w-full top-0 z-50 border-b border-lines shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <!-- Logo -->
+      <a href="#" class="flex-shrink-0 flex items-center cursor-pointer">
+        <img src="assets/logo.png" alt="Den Hof Logo" class="h-14 w-auto object-contain">
+      </a>
+      
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex space-x-12">
+        <a href="#menu" class="text-textDark hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-accentYellow pb-1 text-lg">Menu</a>
+        <a href="#contact" class="text-textDark hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-accentYellow pb-1 text-lg">Contact</a>
+      </nav>
+
+      <!-- Call to Action -->
+      <div class="hidden md:flex items-center">
+        <a href="tel:0479259268" class="bg-primary text-white px-8 py-2.5 rounded-full font-medium hover:bg-opacity-90 transition-all shadow-md hover:shadow-lg text-lg">
+          Call Now
+        </a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button (click)="toggleMenu()" class="text-textDark hover:text-primary focus:outline-none">
+          <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            @if (!isMobileMenuOpen) {
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            } @else {
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            }
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Dropdown -->
+  @if (isMobileMenuOpen) {
+    <div class="md:hidden bg-background border-b border-lines shadow-lg">
+      <div class="px-4 pt-2 pb-6 space-y-4">
+        <a href="#menu" (click)="toggleMenu()" class="block text-textDark hover:text-primary font-medium text-lg border-b border-lines/50 pb-2">Menu</a>
+        <a href="#contact" (click)="toggleMenu()" class="block text-textDark hover:text-primary font-medium text-lg border-b border-lines/50 pb-2">Contact</a>
+        <a href="tel:0479259268" class="block bg-primary text-white text-center px-4 py-3 mt-4 rounded-full font-medium shadow-md">
+          Call Now
+        </a>
+      </div>
+    </div>
+  }
+</header>
+<!-- Spacer voor de fixed header zodat content er niet onder verdwijnt -->
+<div class="h-20"></div>
