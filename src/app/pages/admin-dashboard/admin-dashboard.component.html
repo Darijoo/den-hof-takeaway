@@ -141,6 +141,32 @@
           </div>
         }
       </div>
+      
+      <!-- Wachtwoord Beheer -->
+      <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 self-start mt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Account & Veiligheid</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Nieuw Wachtwoord</label>
+            <input type="password" [(ngModel)]="newPassword" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Herhaal Nieuw Wachtwoord</label>
+            <input type="password" [(ngModel)]="confirmPassword" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+          </div>
+          
+          @if (passwordError) {
+            <p class="text-red-500 text-sm font-medium">{{ passwordError }}</p>
+          }
+          @if (passwordSuccess) {
+            <p class="text-green-600 text-sm font-medium">Je wachtwoord is succesvol gewijzigd!</p>
+          }
+          
+          <button (click)="veranderWachtwoord()" [disabled]="isChangingPassword" class="w-full bg-gray-800 text-white py-3 rounded-lg font-bold hover:bg-opacity-90 shadow-md transition-all disabled:opacity-50 mt-2">
+            {{ isChangingPassword ? 'Bezig...' : 'Wachtwoord Wijzigen' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

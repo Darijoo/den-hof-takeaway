@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MenuService, MenuCategory, MenuItem } from '../../services/menu.service';
 import { SettingsService, AppSettings } from '../../services/settings.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -14,6 +15,7 @@ import { SettingsService, AppSettings } from '../../services/settings.service';
 export class AdminDashboardComponent implements OnInit {
   menuService = inject(MenuService);
   settingsService = inject(SettingsService);
+  authService = inject(AuthService);
   
   categories: MenuCategory[] = [];
   isLoaded = false;
@@ -28,6 +30,12 @@ export class AdminDashboardComponent implements OnInit {
   isSettingsLoaded = false;
   isSavingSettings = false;
 
+  newPassword = '';
+  confirmPassword = '';
+  passwordError = '';
+  passwordSuccess = false;
+  isChangingPassword = false;
+
   getSpicyArray(level: number | undefined): number[] {
     if (!level) return [];
     return Array(level).fill(0);
@@ -36,11 +44,6 @@ export class AdminDashboardComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    if (localStorage.getItem('admin_logged_in') !== 'true') {
-      this.router.navigate(['/admin']);
-      return;
-    }
-
     // Luister naar live veranderingen in de Firestore database
     this.menuService.getCategories().subscribe(cats => {
       this.categories = cats;
@@ -170,8 +173,34 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  logout() {
-    localStorage.removeItem('admin_logged_in');
+  async veranderWachtwoord() {
+    if (this.newPassword !== this.confirmPassword) {
+      this.passwordError = 'Wachtwoorden komen niet overeen.';
+      return;
+    }
+    if (this.newPassword.length < 6) {
+      this.passwordError = 'Wachtwoord moet minimaal 6 tekens bevatten.';
+      return;
+    }
+
+    this.passwordError = '';
+    this.passwordSuccess = false;
+    this.isChangingPassword = true;
+
+    try {
+      await this.authService.veranderWachtwoord(this.newPassword);
+      this.passwordSuccess = true;
+      this.newPassword = '';
+      this.confirmPassword = '';
+    } catch (e: any) {
+      console.error(e);
+      this.passwordError = 'Fout bij wijzigen wachtwoord. Mogelijk moet je opnieuw inloggen om dit te mogen doen.';
+    }
+    this.isChangingPassword = false;
+  }
+
+  async logout() {
+    await this.authService.logout();
     this.router.navigate(['/admin']);
   }
 }
