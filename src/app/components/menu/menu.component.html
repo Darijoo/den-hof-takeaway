@@ -4,44 +4,65 @@
       <h2 class="text-4xl md:text-5xl font-serif font-bold text-textDark inline-block border-b-4 border-accentYellow pb-2">Ons Menu</h2>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-16">
-      @for (category of categories; track category.title) {
-        <div class="mb-10">
-          <h3 class="text-3xl font-serif font-bold text-primary border-b-2 border-lines pb-3 mb-8">
-            {{ category.title }}
-          </h3>
-          <ul class="space-y-8">
-            @for (item of category.items; track item.name) {
-              <li class="flex justify-between items-start group">
-                <div class="flex-1 pr-6">
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-textDark text-lg">
-                      @if (item.id) { <span class="mr-1">{{ item.id }}.</span> }
-                      {{ item.name }}
-                    </span>
-                    @if (item.spicyLevel) {
-                      <span class="flex text-red-500 text-sm ml-2" title="Pittigheid">
-                        @for (i of getSpicyArray(item.spicyLevel); track $index) {
-                          🌶️
-                        }
-                      </span>
-                    }
-                  </div>
-                  @if (item.description) {
-                    <p class="text-gray-500 text-base mt-2 leading-relaxed">{{ item.description }}</p>
-                  }
-                </div>
-                <div class="font-semibold text-textDark text-xl whitespace-nowrap pt-1">
-                  @if (item.hasOptions) {
-                    <span class="text-sm font-normal text-gray-400 mr-1">vanaf</span>
-                  }
-                  €{{ item.price | number:'1.2-2' }}
-                </div>
-              </li>
-            }
-          </ul>
-        </div>
-      }
+    <div class="flex flex-col lg:flex-row gap-x-20 gap-y-16">
+      
+      <!-- Linker Kolom (Oneven) -->
+      <div class="flex-1 flex flex-col gap-y-16">
+        @for (category of categories; track category.title; let i = $index) {
+          @if (i % 2 === 0) {
+            <ng-container *ngTemplateOutlet="categoryBlock; context: { $implicit: category }"></ng-container>
+          }
+        }
+      </div>
+
+      <!-- Rechter Kolom (Even) -->
+      <div class="flex-1 flex flex-col gap-y-16">
+        @for (category of categories; track category.title; let i = $index) {
+          @if (i % 2 === 1) {
+            <ng-container *ngTemplateOutlet="categoryBlock; context: { $implicit: category }"></ng-container>
+          }
+        }
+      </div>
+
     </div>
+
+    <!-- Template voor een Categorie -->
+    <ng-template #categoryBlock let-category>
+      <div>
+        <h3 class="text-3xl font-serif font-bold text-primary border-b-2 border-lines pb-3 mb-8">
+          {{ category.title }}
+        </h3>
+        <ul class="space-y-8">
+          @for (item of category.items; track item.name) {
+            <li class="flex justify-between items-start group">
+              <div class="flex-1 pr-6">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-textDark text-lg">
+                    @if (item.id) { <span class="mr-1">{{ item.id }}.</span> }
+                    {{ item.name }}
+                  </span>
+                  @if (item.spicyLevel) {
+                    <span class="flex text-red-500 text-sm ml-2" title="Pittigheid">
+                      @for (i of getSpicyArray(item.spicyLevel); track $index) {
+                        🌶️
+                      }
+                    </span>
+                  }
+                </div>
+                @if (item.description) {
+                  <p class="text-gray-500 text-base mt-2 leading-relaxed">{{ item.description }}</p>
+                }
+              </div>
+              <div class="font-semibold text-textDark text-xl whitespace-nowrap pt-1">
+                @if (item.hasOptions) {
+                  <span class="text-sm font-normal text-gray-400 mr-1">vanaf</span>
+                }
+                €{{ item.price | number:'1.2-2' }}
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    </ng-template>
   </div>
 </section>
