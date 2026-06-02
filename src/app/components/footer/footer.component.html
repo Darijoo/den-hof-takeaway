@@ -4,14 +4,24 @@
       <img src="assets/logo.png" alt="Den Hof Logo" class="h-14 w-auto object-contain">
     </div>
     
-    <div class="flex gap-8 text-sm font-medium text-textDark/70 uppercase tracking-wider">
-      <a href="#menu" class="hover:text-primary transition-colors">Menu</a>
-      <a href="#contact" class="hover:text-primary transition-colors">Contact</a>
-      <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+    <div class="flex flex-col gap-2 items-center text-center">
+      <div class="flex gap-8 text-sm font-medium text-textDark/70 uppercase tracking-wider">
+        <a href="#menu" class="hover:text-primary transition-colors">Menu</a>
+        <a href="#contact" class="hover:text-primary transition-colors">Contact</a>
+      </div>
+      @if (settings) {
+        <div class="text-sm font-medium text-textDark/80 mt-2">
+          📞 <a [href]="'tel:' + settings.phone.replace(' ', '')" class="hover:text-primary transition-colors mr-4">{{ settings.phone }}</a>
+          📍 <span>{{ settings.address }}</span>
+        </div>
+      }
     </div>
     
-    <div class="text-xs text-textDark/50 tracking-wide">
-      &copy; 2024 Den Hof Authentic Cuisine. All rights reserved.
+    <div class="flex flex-col items-center md:items-end gap-2">
+      <div class="text-xs text-textDark/50 tracking-wide">
+        &copy; {{ currentYear }} Den Hof Authentic Cuisine. All rights reserved.
+      </div>
+      <a routerLink="/admin" class="text-xs text-textDark/30 hover:text-primary transition-colors">Beheerderspaneel</a>
     </div>
   </div>
 </footer>
